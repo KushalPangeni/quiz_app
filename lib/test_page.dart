@@ -5,7 +5,6 @@ import 'dart:math';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz/constant/const.dart';
-import 'package:quiz/widgets/showdialogbox.dart';
 
 class TestPage extends StatefulWidget {
   final List answersList, options;
@@ -28,10 +27,11 @@ class TestPage extends StatefulWidget {
 
 class _TestPageState extends State<TestPage> {
   final controller = ConfettiController(
-    duration: const Duration(seconds: 5),
+    duration: const Duration(seconds: 10),
   );
 
   bool changeAnswerColor = false;
+  bool showWonDialogContainer = false;
   List answersList = <String>['', '', ''];
   List options = <String>['', '', ''];
   String answer = '';
@@ -43,160 +43,190 @@ class _TestPageState extends State<TestPage> {
   @override
   void initState() {
     super.initState();
+    setState(() {});
     options = widget.options;
     answersList = widget.answersList;
     answer = widget.answer;
   }
 
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  //   options = <String>['', '', ''];
+  //   answersList = <String>['', '', ''];
+  // }
+
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Scaffold(
-          backgroundColor: Colors.amber[50],
-          appBar: AppBar(
-            centerTitle: true,
-            title: Text("Quiz"),
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Text(MediaQuery.sizeOf(context).height.toString()),
-                Text(MediaQuery.sizeOf(context).width.toString()),
-                //Images
-                SizedBox(
-                    height: MediaQuery.sizeOf(context).height / 2.4,
-                    child: anyImageIsBigger
-                        ? biggerImageContainer()
-                        : Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  photo1(widget.pic1),
-                                  photo1(widget.pic2),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  photo1(widget.pic3),
-                                  photo1(widget.pic4),
-                                ],
-                              )
-                            ],
-                          )
-                    // GridView.count(
-                    //     childAspectRatio: 1.2,
-                    //     crossAxisSpacing: 5,
-                    //     mainAxisSpacing: 5,
-                    //     crossAxisCount: 2,
-                    //     children: [
-                    //       photo1(
-                    //           'https://images.pexels.com/photos/14111067/pexels-photo-14111067.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'),
-                    //       photo1(
-                    //           'https://images.pexels.com/photos/2922277/pexels-photo-2922277.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'),
-                    //       photo1(
-                    //           'https://images.pexels.com/photos/976870/pexels-photo-976870.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'),
-                    //       photo1(
-                    //           'https://images.pexels.com/photos/792223/pexels-photo-792223.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'),
-                    //     ],
-                    //   ),
-                    ),
-                Text(
-                  widget.title,
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
-                ),
-                sizedbox20,
-                //Answers
-                // SizedBox(
-                //   height: MediaQuery.sizeOf(context).width / 7,
-                //   child: ListView.builder(
-                //     scrollDirection: Axis.horizontal,
-                //     shrinkWrap: true,
-                //     // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                //     //     crossAxisCount: 5, childAspectRatio: 1.4, crossAxisSpacing: 4),
-                //     itemCount: answer.length,
-                //     itemBuilder: (context, index) {
-                //       return cardForAnswers(index, alphabet: answersList[index] ?? '');
-                //     },
-                //   ),
-                // ),
-                // SizedBox(
-                //   height: MediaQuery.sizeOf(context).width / 7,
-                //   child: ListView.builder(
-                //     scrollDirection: Axis.horizontal,
-                //     shrinkWrap: true,
-                //     // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                //     //     crossAxisCount: 5, childAspectRatio: 1.4, crossAxisSpacing: 4),
-                //     itemCount: answer.length,
-                //     itemBuilder: (context, index) {
-                //       return optionCard(index, alphabet: answersList[index] ?? '');
-                //     },
-                //   ),
-                // ),
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Stack(
+        children: [
+          Scaffold(
+            backgroundColor: Colors.amber[50],
+            appBar: AppBar(
+              leading: IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(Icons.arrow_back_ios_new_rounded)),
+              centerTitle: true,
+              title: Text("Quiz"),
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  // Text(MediaQuery.sizeOf(context).height.toString()),
+                  // Text(MediaQuery.sizeOf(context).width.toString()),
+                  //Images
+                  SizedBox(
+                      height: MediaQuery.sizeOf(context).height / 2.4,
+                      child: anyImageIsBigger
+                          ? biggerImageContainer()
+                          : Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    photo1(widget.pic1),
+                                    photo1(widget.pic2),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    photo1(widget.pic3),
+                                    photo1(widget.pic4),
+                                  ],
+                                )
+                              ],
+                            )),
+                  Text(
+                    widget.title,
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
+                  ),
+                  sizedbox20,
 
-                //Answers
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                      answer.length, (index) => cardForAnswers(index, alphabet: answersList[index] ?? '')),
-                ),
-                sizedbox40,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(5, (index) => optionCard(index, alphabet: options[index] ?? '')),
-                ),
-                sizedbox1,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(5, (index) {
-                    // print(index + 5);
-                    return optionCard(index + 5, alphabet: options[index + 5] ?? '');
-                  }),
-                ),
-                //Options
-                // Expanded(
-                //   child: ListView.builder(
-                //     scrollDirection: Axis.horizontal,
-                //     shrinkWrap: true,
-                //     itemCount: options.length,
-                //     itemBuilder: (context, index) {
-                //       return optionCard(index, alphabet: options[index] ?? '');
-                //     },
-                //   ),
-                // ),
-                // SizedBox(
-                //   // color: Colors.black,
-                //   height: 135,
-                //   width: 500,
-                //   child: GridView.builder(
-                //     physics: NeverScrollableScrollPhysics(),
-                //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                //         crossAxisCount: 5, crossAxisSpacing: 4, mainAxisSpacing: 4, childAspectRatio: 1),
-                //     itemCount: options.length,
-                //     itemBuilder: (context, index) {
-                //       return AspectRatio(aspectRatio: 1, child: optionCard(index, alphabet: options[index] ?? ''));
-                //     },
-                //   ),
-                // ),
-              ],
+                  //Answers
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                        answer.length, (index) => cardForAnswers(index, alphabet: answersList[index] ?? '')),
+                  ),
+                  sizedbox40,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(5, (index) => optionCard(index, alphabet: options[index] ?? '')),
+                  ),
+                  sizedbox1,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(5, (index) {
+                      // print(index + 5);
+                      return optionCard(index + 5, alphabet: options[index + 5] ?? '');
+                    }),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        Positioned(
-          top: 20,
-          left: MediaQuery.sizeOf(context).width / 2,
-          child: ConfettiWidget(
-            numberOfParticles: 50,
-            confettiController: controller,
-            // shouldLoop: true,
-            blastDirection: -pi / 2,
+          //DialogContainer
+          if (showWonDialogContainer)
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Center(
+                child: Container(
+                  height: 300,
+                  width: 250,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.amber,
+                  ),
+                  child: Column(
+                    // crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Spacer(),
+                      Column(
+                        children: [
+                          Text(
+                            "Congratulations",
+                            style: TextStyle(
+                              decoration: TextDecoration.none,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              fontSize: 18,
+                            ),
+                          ),
+                          Text(
+                            "You won",
+                            style: TextStyle(
+                              decoration: TextDecoration.none,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Spacer(),
+                      Align(
+                          alignment: Alignment.bottomRight,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                                onPressed: () async {
+                                  // setState(() {});
+                                  await Future.delayed(
+                                    Duration(seconds: 1),
+                                  );
+                                  navigate();
+                                },
+                                child: Text("Next")),
+                          ))
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          //Conffetti
+          Positioned(
+            top: MediaQuery.sizeOf(context).height / 2 - 160,
+            left: MediaQuery.sizeOf(context).width / 2,
+            child: ConfettiWidget(
+              emissionFrequency: 0.02,
+              numberOfParticles: 50,
+              confettiController: controller,
+              blastDirection: -pi / 2,
+            ),
           ),
-        )
-      ],
+          // if (showWonDialogContainer)
+          //   Positioned(
+          //     top: MediaQuery.sizeOf(context).height / 2 - 150 - 35,
+          //     left: MediaQuery.sizeOf(context).width / 2 - 35,
+          //     child: Center(
+          //       child: Container(
+          //         height: 70,
+          //         width: 70,
+          //         decoration: BoxDecoration(
+          //           shape: BoxShape.circle,
+          //           color: Colors.amber,
+          //           boxShadow: [BoxShadow(offset: Offset(0.5, 6), blurRadius: 8, color: Colors.grey)],
+          //         ),
+          //         // child: Text("Top"),
+          //       ),
+          //     ),
+          //   )
+        ],
+      ),
     );
+  }
+
+  navigate() {
+    Navigator.pop(context);
   }
 
   Widget cardForAnswers(int index, {String? alphabet}) {
@@ -262,9 +292,12 @@ class _TestPageState extends State<TestPage> {
           changeAnswerColor = false;
         }
         if (answer == checkAnswer) {
-          showWinDialog(context);
-          // controller.play();
-          // print("You Won");
+          setState(() {
+            showWonDialogContainer = true;
+            controller.play();
+            // showWinDialog(context);
+            // print("You Won");
+          });
         }
       },
       child: Container(
@@ -350,3 +383,55 @@ class _TestPageState extends State<TestPage> {
     );
   }
 }
+ //Answers
+                // SizedBox(
+                //   height: MediaQuery.sizeOf(context).width / 7,
+                //   child: ListView.builder(
+                //     scrollDirection: Axis.horizontal,
+                //     shrinkWrap: true,
+                //     // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                //     //     crossAxisCount: 5, childAspectRatio: 1.4, crossAxisSpacing: 4),
+                //     itemCount: answer.length,
+                //     itemBuilder: (context, index) {
+                //       return cardForAnswers(index, alphabet: answersList[index] ?? '');
+                //     },
+                //   ),
+                // ),
+                // SizedBox(
+                //   height: MediaQuery.sizeOf(context).width / 7,
+                //   child: ListView.builder(
+                //     scrollDirection: Axis.horizontal,
+                //     shrinkWrap: true,
+                //     // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                //     //     crossAxisCount: 5, childAspectRatio: 1.4, crossAxisSpacing: 4),
+                //     itemCount: answer.length,
+                //     itemBuilder: (context, index) {
+                //       return optionCard(index, alphabet: answersList[index] ?? '');
+                //     },
+                //   ),
+                // ),
+//Options
+                // Expanded(
+                //   child: ListView.builder(
+                //     scrollDirection: Axis.horizontal,
+                //     shrinkWrap: true,
+                //     itemCount: options.length,
+                //     itemBuilder: (context, index) {
+                //       return optionCard(index, alphabet: options[index] ?? '');
+                //     },
+                //   ),
+                // ),
+                // SizedBox(
+                //   // color: Colors.black,
+                //   height: 135,
+                //   width: 500,
+                //   child: GridView.builder(
+                //     physics: NeverScrollableScrollPhysics(),
+                //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                //         crossAxisCount: 5, crossAxisSpacing: 4, mainAxisSpacing: 4, childAspectRatio: 1),
+                //     itemCount: options.length,
+                //     itemBuilder: (context, index) {
+                //       return AspectRatio(aspectRatio: 1, child: optionCard(index, alphabet: options[index] ?? ''));
+                //     },
+                //   ),
+                // ),
