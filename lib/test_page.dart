@@ -2,16 +2,23 @@
 
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:quiz/constant/const.dart';
+import 'package:quiz/provider/coin_provider.dart';
+import 'package:quiz/widgets/showdialogbox.dart';
+import 'package:shimmer/shimmer.dart';
 
 class TestPage extends StatefulWidget {
+  final int level;
   final List answersList, options;
   final String answer, title;
   final String pic1, pic2, pic3, pic4;
   const TestPage(
       {super.key,
+      required this.level,
       required this.answer,
       required this.title,
       required this.answersList,
@@ -43,18 +50,22 @@ class _TestPageState extends State<TestPage> {
   @override
   void initState() {
     super.initState();
-    setState(() {});
-    options = widget.options;
-    answersList = widget.answersList;
-    answer = widget.answer;
+    setState(
+      () {
+        options = widget.options;
+        answersList = widget.answersList;
+        answer = widget.answer;
+      },
+    );
   }
 
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   options = <String>['', '', ''];
-  //   answersList = <String>['', '', ''];
-  // }
+  @override
+  void dispose() {
+    // print("Disposed");
+    options = <String>['', '', ''];
+    answersList = <String>['', '', ''];
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +83,79 @@ class _TestPageState extends State<TestPage> {
                     Navigator.pop(context);
                   },
                   icon: Icon(Icons.arrow_back_ios_new_rounded)),
-              centerTitle: true,
-              title: Text("Quiz"),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      showHintSelectionDialog(context);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                      decoration: BoxDecoration(
+                        color: Colors.amber[200],
+                        borderRadius: BorderRadius.circular(16),
+                        // boxShadow: [BoxShadow(offset: Offset(1, 1), color: Colors.grey)],
+                        border: Border.all(width: 2, color: Colors.grey),
+                      ),
+                      child: SizedBox(
+                        width: 62,
+                        child: Row(
+                          children: [
+                            Icon(Icons.electric_bolt_outlined),
+                            Text(
+                              "Hint",
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  Text(
+                    'Level ${widget.level}',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  Spacer(),
+                  Consumer<CoinProvider>(
+                    builder: (context, provider, child) => GestureDetector(
+                      onTap: () {
+                        showCoinDialog(context);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.amber[200],
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(width: 2, color: Colors.grey),
+                        ),
+                        child: Row(
+                          children: [
+                            SizedBox(width: 5),
+                            Icon(Icons.attach_money_rounded),
+                            Text(
+                              "${provider.coins ?? 0} ",
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                            Container(
+                              padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.amber,
+                                  boxShadow: [BoxShadow(offset: Offset(1, 1), color: Colors.grey)]),
+                              child: Text(
+                                '+',
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10)
+                ],
+              ),
             ),
             body: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -109,7 +191,6 @@ class _TestPageState extends State<TestPage> {
                     style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
                   ),
                   sizedbox20,
-
                   //Answers
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -134,92 +215,37 @@ class _TestPageState extends State<TestPage> {
             ),
           ),
           //DialogContainer
+          if (showWonDialogContainer) wonDialogBox(context),
+          //Transparent
           if (showWonDialogContainer)
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Center(
+            Positioned(
+                bottom: 0,
                 child: Container(
-                  height: 300,
-                  width: 250,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.amber,
-                  ),
-                  child: Column(
-                    // crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Spacer(),
-                      Column(
-                        children: [
-                          Text(
-                            "Congratulations",
-                            style: TextStyle(
-                              decoration: TextDecoration.none,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              fontSize: 18,
-                            ),
-                          ),
-                          Text(
-                            "You won",
-                            style: TextStyle(
-                              decoration: TextDecoration.none,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Spacer(),
-                      Align(
-                          alignment: Alignment.bottomRight,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ElevatedButton(
-                                onPressed: () async {
-                                  // setState(() {});
-                                  await Future.delayed(
-                                    Duration(seconds: 1),
-                                  );
-                                  navigate();
-                                },
-                                child: Text("Next")),
-                          ))
-                    ],
-                  ),
-                ),
-              ),
-            ),
+                  height: 245,
+                  width: MediaQuery.sizeOf(context).width,
+                  color: Colors.transparent,
+                )),
           //Conffetti
           Positioned(
             top: MediaQuery.sizeOf(context).height / 2 - 160,
-            left: MediaQuery.sizeOf(context).width / 2,
+            right: 0,
             child: ConfettiWidget(
               emissionFrequency: 0.02,
               numberOfParticles: 50,
               confettiController: controller,
-              blastDirection: -pi / 2,
+              blastDirection: pi * 1.25,
             ),
           ),
-          // if (showWonDialogContainer)
-          //   Positioned(
-          //     top: MediaQuery.sizeOf(context).height / 2 - 150 - 35,
-          //     left: MediaQuery.sizeOf(context).width / 2 - 35,
-          //     child: Center(
-          //       child: Container(
-          //         height: 70,
-          //         width: 70,
-          //         decoration: BoxDecoration(
-          //           shape: BoxShape.circle,
-          //           color: Colors.amber,
-          //           boxShadow: [BoxShadow(offset: Offset(0.5, 6), blurRadius: 8, color: Colors.grey)],
-          //         ),
-          //         // child: Text("Top"),
-          //       ),
-          //     ),
-          //   )
+          Positioned(
+            top: MediaQuery.sizeOf(context).height / 2 - 160,
+            left: 0,
+            child: ConfettiWidget(
+              emissionFrequency: 0.02,
+              numberOfParticles: 50,
+              confettiController: controller,
+              blastDirection: pi * 1.75,
+            ),
+          ),
         ],
       ),
     );
@@ -293,6 +319,8 @@ class _TestPageState extends State<TestPage> {
         }
         if (answer == checkAnswer) {
           setState(() {
+            Provider.of<CoinProvider>(context, listen: false).addCoins(50);
+            Provider.of<CoinProvider>(context, listen: false).saveLevel(widget.level + 1);
             showWonDialogContainer = true;
             controller.play();
             // showWinDialog(context);
@@ -333,25 +361,46 @@ class _TestPageState extends State<TestPage> {
               height: MediaQuery.sizeOf(context).height / 2.5,
               width: MediaQuery.sizeOf(context).width,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.amber,
-                  image: DecorationImage(image: NetworkImage(biggerImage), fit: BoxFit.cover),
-                  border: Border.all(color: Colors.black, width: 4)),
-              child: Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Align(
-                  alignment: Alignment.bottomRight,
-                  child: Container(
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.amber),
-                    child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text(
-                        biggerImage.split('?')[0],
-                        style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w500),
+                  borderRadius: BorderRadius.circular(2),
+                  color: Colors.amber[100],
+                  border: Border.all(color: Colors.grey, width: 4)),
+              child: Stack(
+                children: [
+                  SizedBox(
+                    height: double.infinity,
+                    width: double.infinity,
+                    child: CachedNetworkImage(
+                      imageUrl: biggerImage,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Shimmer.fromColors(
+                          baseColor: Colors.white,
+                          highlightColor: Colors.grey.shade100,
+                          child: Container(
+                            color: Colors.teal,
+                          )),
+                      errorWidget: (context, url, error) => Shimmer.fromColors(
+                        baseColor: Colors.grey.shade200,
+                        highlightColor: Colors.grey.shade100,
+                        child: Container(
+                          color: Colors.teal,
+                        ),
                       ),
                     ),
                   ),
-                ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Container(
+                      padding: EdgeInsets.all(4),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(4), color: Colors.transparent),
+                      child: Text(
+                        biggerImage.split('?')[0],
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w500, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             )
           : const SizedBox(),
@@ -374,64 +423,31 @@ class _TestPageState extends State<TestPage> {
           height: MediaQuery.sizeOf(context).width < 270 ? 120 : 150,
           width: MediaQuery.sizeOf(context).width < 324 ? MediaQuery.sizeOf(context).width / 2.3 : 150,
           decoration: BoxDecoration(
-              color: Colors.amber,
-              border: Border.all(color: Colors.black, width: 5),
-              borderRadius: BorderRadius.circular(8),
-              image: DecorationImage(image: NetworkImage(imgPath), fit: BoxFit.cover)),
+            // color: Colors.amber,
+            // gradient: LinearGradient(
+            //     colors: [const Color.fromARGB(255, 226, 154, 178), const Color.fromARGB(255, 209, 173, 119)]),
+            border: Border.all(color: Colors.grey, width: 5),
+            borderRadius: BorderRadius.circular(2),
+            // image: DecorationImage(image: NetworkImage(imgPath), fit: BoxFit.cover),
+          ),
+          child: CachedNetworkImage(
+            imageUrl: imgPath,
+            fit: BoxFit.cover,
+            placeholder: (context, url) => Shimmer.fromColors(
+                baseColor: Colors.white,
+                highlightColor: Colors.grey.shade100,
+                child: Container(
+                  color: Colors.teal,
+                )),
+            errorWidget: (context, url, error) => Shimmer.fromColors(
+                baseColor: Colors.grey.shade200,
+                highlightColor: Colors.grey.shade100,
+                child: Container(
+                  color: Colors.teal,
+                )),
+          ),
         ),
       ),
     );
   }
 }
- //Answers
-                // SizedBox(
-                //   height: MediaQuery.sizeOf(context).width / 7,
-                //   child: ListView.builder(
-                //     scrollDirection: Axis.horizontal,
-                //     shrinkWrap: true,
-                //     // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                //     //     crossAxisCount: 5, childAspectRatio: 1.4, crossAxisSpacing: 4),
-                //     itemCount: answer.length,
-                //     itemBuilder: (context, index) {
-                //       return cardForAnswers(index, alphabet: answersList[index] ?? '');
-                //     },
-                //   ),
-                // ),
-                // SizedBox(
-                //   height: MediaQuery.sizeOf(context).width / 7,
-                //   child: ListView.builder(
-                //     scrollDirection: Axis.horizontal,
-                //     shrinkWrap: true,
-                //     // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                //     //     crossAxisCount: 5, childAspectRatio: 1.4, crossAxisSpacing: 4),
-                //     itemCount: answer.length,
-                //     itemBuilder: (context, index) {
-                //       return optionCard(index, alphabet: answersList[index] ?? '');
-                //     },
-                //   ),
-                // ),
-//Options
-                // Expanded(
-                //   child: ListView.builder(
-                //     scrollDirection: Axis.horizontal,
-                //     shrinkWrap: true,
-                //     itemCount: options.length,
-                //     itemBuilder: (context, index) {
-                //       return optionCard(index, alphabet: options[index] ?? '');
-                //     },
-                //   ),
-                // ),
-                // SizedBox(
-                //   // color: Colors.black,
-                //   height: 135,
-                //   width: 500,
-                //   child: GridView.builder(
-                //     physics: NeverScrollableScrollPhysics(),
-                //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                //         crossAxisCount: 5, crossAxisSpacing: 4, mainAxisSpacing: 4, childAspectRatio: 1),
-                //     itemCount: options.length,
-                //     itemBuilder: (context, index) {
-                //       return AspectRatio(aspectRatio: 1, child: optionCard(index, alphabet: options[index] ?? ''));
-                //     },
-                //   ),
-                // ),
