@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class CoinProvider extends ChangeNotifier {
   int? coins;
   int? level;
-  // int? firstTime;
 
   getCoins(context) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -14,8 +13,6 @@ class CoinProvider extends ChangeNotifier {
     coins = pref.getInt('Coins');
     await Future.delayed(const Duration(seconds: 1)).then((value) async {
       if (coins == null) {
-        // pref.setInt('firstTime', 1);
-        // firstTime = pref.getInt('firstTime');
         return showEntryCoinDialog(context);
       }
     });
@@ -32,8 +29,13 @@ class CoinProvider extends ChangeNotifier {
   addCoins(int value) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     coins = pref.getInt('Coins');
-    coins = coins! + value;
-    pref.setInt('Coins', coins!);
+    if (coins == null) {
+      pref.setInt('Coins', value);
+      coins = pref.getInt('Coins');
+    } else {
+      coins = coins! + value;
+      pref.setInt('Coins', coins!);
+    }
     coins = pref.getInt('Coins');
     notifyListeners();
   }

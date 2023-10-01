@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quiz/constant/const.dart';
 import 'package:quiz/provider/coin_provider.dart';
+import 'package:rive/rive.dart' as rive;
 
-Future<dynamic> showHintSelectionDialog(BuildContext context) {
+Future<dynamic> showHintSelectionDialog(BuildContext context, String hint) {
   return showDialog(
       context: context,
       builder: (context) {
@@ -26,7 +27,7 @@ Future<dynamic> showHintSelectionDialog(BuildContext context) {
                     const Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Text(
-                        "You will lose \$50 for hint",
+                        "You will lose \$100 for hint",
                         style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
                       ),
                     ),
@@ -53,8 +54,8 @@ Future<dynamic> showHintSelectionDialog(BuildContext context) {
                                     if (coins < 50) {
                                       notEnoughCoins(context);
                                     } else {
-                                      provider.decreaseCoins(50);
-                                      showHintDialog(context);
+                                      provider.decreaseCoins(100);
+                                      showHintDialog(context, hint);
                                     }
                                   }
                                 },
@@ -116,7 +117,7 @@ Future<dynamic> showCoinDialog(BuildContext context) {
       });
 }
 
-Future<dynamic> showHintDialog(BuildContext context) {
+Future<dynamic> showHintDialog(BuildContext context, String hint) {
   return showDialog(
       context: context,
       builder: (context) {
@@ -136,11 +137,11 @@ Future<dynamic> showHintDialog(BuildContext context) {
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                     const Divider(),
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        "Hint: Word start from B",
-                        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+                        "Hint: $hint",
+                        style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
                       ),
                     ),
                     Align(
@@ -265,35 +266,52 @@ Widget wonDialogBox(BuildContext context) {
         height: 250,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: Colors.amber[200],
+          // color: Colors.amber[200],
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
+          // mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Spacer(),
-            const Column(
-              children: [
-                Text(
-                  "Congratulations",
-                  style: TextStyle(
-                    decoration: TextDecoration.none,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: 18,
-                  ),
-                ),
-                Text(
-                  "\$50 added to your bank",
-                  style: TextStyle(
-                    decoration: TextDecoration.none,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: 18,
-                  ),
-                ),
-              ],
+            // const Spacer(),
+            Container(
+              // height: 100,
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+              child: const rive.RiveAnimation.asset(
+                'assets/snowy-day.riv',
+                fit: BoxFit.cover,
+              ),
             ),
-            const Spacer(),
+            const Positioned(
+              bottom: 60,
+              left: 40,
+              child: Column(
+                children: [
+                  Text(
+                    "Congratulations",
+                    style: TextStyle(
+                      decoration: TextDecoration.none,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      fontSize: 18,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    "\$25 added to your bank",
+                    style: TextStyle(
+                      decoration: TextDecoration.none,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      fontSize: 18,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // const Spacer(),
+
             Align(
                 alignment: Alignment.bottomRight,
                 child: Padding(

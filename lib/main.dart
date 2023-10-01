@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
-import 'package:quiz/homepage.dart';
+import 'package:quiz/constant/ad.dart';
 import 'package:quiz/provider/coin_provider.dart';
+import 'package:quiz/splash%20screen/splash_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  RequestConfiguration requestConfiguration = RequestConfiguration(testDeviceIds: devices);
+  MobileAds.instance.updateRequestConfiguration(requestConfiguration);
 
   runApp(const MyApp());
 }
@@ -33,7 +37,7 @@ class MyApp extends StatelessWidget {
         //   pic3: level1[6],
         //   pic4: level1[7],
         // ),
-        home: const HomePage(),
+        home: const SplashScreen(),
       ),
     );
   }

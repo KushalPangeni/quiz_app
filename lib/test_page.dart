@@ -5,7 +5,9 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
+import 'package:quiz/constant/ad.dart';
 import 'package:quiz/constant/const.dart';
 import 'package:quiz/provider/coin_provider.dart';
 import 'package:quiz/widgets/showdialogbox.dart';
@@ -16,6 +18,7 @@ class TestPage extends StatefulWidget {
   final List answersList, options;
   final String answer, title;
   final String pic1, pic2, pic3, pic4;
+  final String hint;
   const TestPage(
       {super.key,
       required this.level,
@@ -26,7 +29,8 @@ class TestPage extends StatefulWidget {
       required this.pic1,
       required this.pic2,
       required this.pic3,
-      required this.pic4});
+      required this.pic4,
+      required this.hint});
 
   @override
   State<TestPage> createState() => _TestPageState();
@@ -46,10 +50,13 @@ class _TestPageState extends State<TestPage> {
   bool anyImageIsBigger = false;
   bool sizeSmall = true;
   String biggerImage = '';
-
+  late BannerAd bannerAd;
+  bool isAdLoaded = false;
   @override
   void initState() {
+    print('initstate');
     super.initState();
+    initBannerAd();
     setState(
       () {
         options = widget.options;
@@ -61,7 +68,7 @@ class _TestPageState extends State<TestPage> {
 
   @override
   void dispose() {
-    // print("Disposed");
+    print("Disposed");
     options = <String>['', '', ''];
     answersList = <String>['', '', ''];
     super.dispose();
@@ -88,7 +95,7 @@ class _TestPageState extends State<TestPage> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      showHintSelectionDialog(context);
+                      showHintSelectionDialog(context, widget.hint);
                     },
                     child: Container(
                       padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
@@ -213,18 +220,14 @@ class _TestPageState extends State<TestPage> {
                 ],
               ),
             ),
+            bottomNavigationBar: isAdLoaded
+                ? SizedBox(
+                    height: bannerAd.size.height.toDouble(),
+                    width: bannerAd.size.width.toDouble(),
+                    child: AdWidget(ad: bannerAd),
+                  )
+                : const SizedBox(),
           ),
-          //DialogContainer
-          if (showWonDialogContainer) wonDialogBox(context),
-          //Transparent
-          if (showWonDialogContainer)
-            Positioned(
-                bottom: 0,
-                child: Container(
-                  height: 245,
-                  width: MediaQuery.sizeOf(context).width,
-                  color: Colors.transparent,
-                )),
           //Conffetti
           Positioned(
             top: MediaQuery.sizeOf(context).height / 2 - 160,
@@ -246,9 +249,39 @@ class _TestPageState extends State<TestPage> {
               blastDirection: pi * 1.75,
             ),
           ),
+          //Transparent
+          if (showWonDialogContainer)
+            Positioned(
+                bottom: 0,
+                child: Container(
+                  height: MediaQuery.sizeOf(context).height - 100,
+                  width: MediaQuery.sizeOf(context).width,
+                  color: Colors.transparent,
+                )),
+          //DialogContainer
+          if (showWonDialogContainer) wonDialogBox(context),
         ],
       ),
     );
+  }
+
+  initBannerAd() {
+    bannerAd = BannerAd(
+      size: AdSize.banner,
+      adUnitId: bannerAdUnit,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            isAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        },
+      ),
+      request: const AdRequest(),
+    );
+    bannerAd.load();
   }
 
   navigate() {
@@ -272,8 +305,8 @@ class _TestPageState extends State<TestPage> {
         );
       },
       child: Container(
-        height: MediaQuery.sizeOf(context).width < 340 ? MediaQuery.sizeOf(context).width / 7 : 60,
-        width: MediaQuery.sizeOf(context).width < 340 ? MediaQuery.sizeOf(context).width / 7 : 60,
+        height: MediaQuery.sizeOf(context).width < 340 ? MediaQuery.sizeOf(context).width / 7 : 40,
+        width: MediaQuery.sizeOf(context).width < 340 ? MediaQuery.sizeOf(context).width / 7 : 40,
         margin: EdgeInsets.all(2),
         decoration: BoxDecoration(
           color: Colors.amber,
@@ -313,13 +346,53 @@ class _TestPageState extends State<TestPage> {
         // print("Answerlist $answersList");
         // print("Options $options");
         if (answer.length == checkAnswer.length && answer != checkAnswer) {
+          // showDialog(
+          //     context: context,
+          //     builder: (context) {
+          //       return AlertDialog(
+          //         title: Text("Restart"),
+          //         actions: [
+          //           IconButton(
+          //               onPressed: () {
+          //                 setState(
+          //                   () {
+          //                     options = widget.options;
+          //                     answersList = widget.answersList;
+          //                     answer = widget.answer;
+          //                   },
+          //                 );
+          //                 // var level = lists[index];
+          //                 // Navigator.pushReplacement(
+          //                 //     context, PageTransition(child: HomePage(), type: PageTransitionType.rightToLeft));
+          //                 // Navigator.push(
+          //                 //   context,
+          //                 //   PageTransition(
+          //                 //       child: TestPage(
+          //                 //         level: index,
+          //                 //         answer: level[2],
+          //                 //         title: level[3],
+          //                 //         answersList: level[0],
+          //                 //         options: level[1],
+          //                 //         pic1: level[4],
+          //                 //         pic2: level[5],
+          //                 //         pic3: level[6],
+          //                 //         pic4: level[7],
+          //                 //         hint: level[8],
+          //                 //       ),
+          //                 //       type: PageTransitionType.rightToLeft),
+          //                 // );
+          //               },
+          //               icon: Icon(Icons.restart_alt_outlined))
+          //         ],
+          //       );
+          // });
           changeAnswerColor = true;
         } else {
           changeAnswerColor = false;
         }
         if (answer == checkAnswer) {
           setState(() {
-            Provider.of<CoinProvider>(context, listen: false).addCoins(50);
+            Provider.of<CoinProvider>(context, listen: false).addCoins(25);
             Provider.of<CoinProvider>(context, listen: false).saveLevel(widget.level + 1);
             showWonDialogContainer = true;
             controller.play();
