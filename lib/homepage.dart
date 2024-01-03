@@ -24,11 +24,14 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late BannerAd bannerAd;
   bool isAdLoaded = false;
+  // RewardedInterstitial rewardedInterstitialAd = RewardedInterstitial();
+  InterstitialAd? _interstitialAd;
   @override
   void initState() {
     super.initState();
     log('Init');
     initBannerAd();
+    _createInterstitialAd();
     Provider.of<CoinProvider>(context, listen: false).getCoins(context);
     Provider.of<CoinProvider>(context, listen: false).getLevelAtStart(context);
   }
@@ -58,60 +61,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     ScrollController scrollController = ScrollController(initialScrollOffset: 0, keepScrollOffset: false);
     return Scaffold(
-      // appBar: AppBar(
-      //   toolbarOpacity: 0,
-      //   // shadowColor: Colors.transparent,
-      //   // backgroundColor: Colors.transparent,
-      //   centerTitle: true,
-      //   elevation: 0,
-      //   title: Row(
-      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //     children: [SizedBox(width: 10)],
-      //   ),
-      //   actions: [
-      //     GestureDetector(
-      //       onTap: () {
-      //         showCoinDialog(context);
-      //       },
-      //       child: Container(
-      //         decoration: BoxDecoration(
-      //           color: Colors.amber[200],
-      //           borderRadius: BorderRadius.circular(16),
-      //           border: Border.all(width: 2, color: Colors.grey),
-      //         ),
-      //         child: Row(
-      //           children: [
-      //             SizedBox(width: 5),
-      //             Icon(Icons.attach_money_rounded),
-      //             Consumer<CoinProvider>(
-      //               builder: (context, provider, child) => Text(
-      //                 '${provider.coins ?? 0} ',
-      //                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-      //               ),
-      //             ),
-      //             Container(
-      //               padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-      //               decoration: BoxDecoration(
-      //                   shape: BoxShape.circle,
-      //                   color: Colors.amber,
-      //                   boxShadow: [BoxShadow(offset: Offset(0.6, 0.6), color: Colors.grey)]),
-      //               child: Text(
-      //                 '+',
-      //                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-      //               ),
-      //             ),
-      //             SizedBox(
-      //               width: 2,
-      //             )
-      //           ],
-      //         ),
-      //       ),
-      //     ),
-      //     SizedBox(
-      //       width: 10,
-      //     )
-      //   ],
-      // ),
       body: Container(
         height: double.infinity,
         decoration: BoxDecoration(
@@ -210,6 +159,57 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void showInterstitialAd() {
+    log("showInterstitialAd called");
+    if (_interstitialAd == null) {
+      log('Warning: attempt to show interstitial before loaded.');
+      adError(context);
+      return;
+    }
+    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (InterstitialAd ad) => log('ad onAdShowedFullScreenContent.'),
+      onAdDismissedFullScreenContent: (InterstitialAd ad) {
+        log('$ad onAdDismissedFullScreenContent.');
+        ad.dispose();
+        _createInterstitialAd();
+        setState(() {
+          Provider.of<CoinProvider>(context, listen: false).addCoins(50);
+        });
+      },
+      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+        log('$ad onAdFailedToShowFullScreenContent: $error');
+        ad.dispose();
+        _createInterstitialAd();
+      },
+    );
+    _interstitialAd!.show();
+    // increaseCoin();
+    _interstitialAd = null;
+  }
+
+  void _createInterstitialAd() {
+    //  int numInterstitialLoadAttempts = 0;
+    InterstitialAd.load(
+        adUnitId: interstialAdUnit,
+        request: const AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            log('$ad loaded');
+            _interstitialAd = ad;
+            // numInterstitialLoadAttempts = 0;
+            _interstitialAd!.setImmersiveMode(true);
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            log('InterstitialAd failed to load: $error.');
+            // numInterstitialLoadAttempts += 1;
+            _interstitialAd = null;
+            // if (numInterstitialLoadAttempts < maxFailedLoadAttempts) {
+            // _createInterstitialAd();
+            // }
+          },
+        ));
+  }
+
   Widget buyPet() {
     return GestureDetector(
       onTap: () {
@@ -222,7 +222,7 @@ class _HomePageState extends State<HomePage> {
                     backgroundColor: Colors.transparent,
                     title: Container(
                       padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(color: Colors.amber[200], borderRadius: BorderRadius.circular(12)),
+                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
                       // height: 150,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -235,7 +235,7 @@ class _HomePageState extends State<HomePage> {
                           const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
-                              "You can buy pets from next week. Trying to give update as soon as possible.",
+                              "You can buy pets soon. Updating as soon as possible.",
                               style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
                             ),
                           ),
@@ -278,7 +278,7 @@ class _HomePageState extends State<HomePage> {
   Widget coin() {
     return GestureDetector(
       onTap: () {
-        showCoinDialog(context);
+        showCoinDialog(context, showInterstitialAd);
       },
       child: Container(
         decoration: BoxDecoration(

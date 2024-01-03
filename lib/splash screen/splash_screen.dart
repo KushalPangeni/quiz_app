@@ -35,11 +35,11 @@ class _SplashScreenState extends State<SplashScreen> {
               Image.asset('assets/icon.png'),
               const Spacer(),
               LinearPercentIndicator(
-                lineHeight: 40,
+                lineHeight: 20,
                 percent: percent / 100,
                 progressColor: Colors.deepPurple.shade300,
                 backgroundColor: Colors.deepPurple.shade100,
-                animation: true,
+                // animation: true,
                 barRadius: const Radius.circular(50),
               ),
               const SizedBox(

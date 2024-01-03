@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:developer' as developer;
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -52,11 +53,16 @@ class _TestPageState extends State<TestPage> {
   String biggerImage = '';
   late BannerAd bannerAd;
   bool isAdLoaded = false;
+
+  InterstitialAd? _interstitialAd;
+
   @override
   void initState() {
     print('initstate');
     super.initState();
     initBannerAd();
+    _createInterstitialAd();
+
     setState(
       () {
         options = widget.options;
@@ -76,10 +82,14 @@ class _TestPageState extends State<TestPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return false;
-      },
+    return PopScope(
+      canPop: false,
+      // onPopInvoked: (didPop) {
+
+      // },
+      // onWillPop: () async {
+      //   return false;
+      // },
       child: Stack(
         children: [
           Scaffold(
@@ -128,7 +138,7 @@ class _TestPageState extends State<TestPage> {
                   Consumer<CoinProvider>(
                     builder: (context, provider, child) => GestureDetector(
                       onTap: () {
-                        showCoinDialog(context);
+                        showCoinDialog(context, showInterstitialAd);
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -522,5 +532,56 @@ class _TestPageState extends State<TestPage> {
         ),
       ),
     );
+  }
+
+  void showInterstitialAd() {
+    developer.log("showInterstitialAd called");
+    if (_interstitialAd == null) {
+      developer.log('Warning: attempt to show interstitial before loaded.');
+      adError(context);
+      return;
+    }
+    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (InterstitialAd ad) => developer.log('ad onAdShowedFullScreenContent.'),
+      onAdDismissedFullScreenContent: (InterstitialAd ad) {
+        developer.log('$ad onAdDismissedFullScreenContent.');
+        ad.dispose();
+        _createInterstitialAd();
+        setState(() {
+          Provider.of<CoinProvider>(context, listen: false).addCoins(50);
+        });
+      },
+      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+        developer.log('$ad onAdFailedToShowFullScreenContent: $error');
+        ad.dispose();
+        _createInterstitialAd();
+      },
+    );
+    _interstitialAd!.show();
+    // increaseCoin();
+    _interstitialAd = null;
+  }
+
+  void _createInterstitialAd() {
+    //  int numInterstitialLoadAttempts = 0;
+    InterstitialAd.load(
+        adUnitId: interstialAdUnit,
+        request: const AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            developer.log('$ad loaded');
+            _interstitialAd = ad;
+            // numInterstitialLoadAttempts = 0;
+            _interstitialAd!.setImmersiveMode(true);
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            developer.log('InterstitialAd failed to load: $error.');
+            // numInterstitialLoadAttempts += 1;
+            _interstitialAd = null;
+            // if (numInterstitialLoadAttempts < maxFailedLoadAttempts) {
+            // _createInterstitialAd();
+            // }
+          },
+        ));
   }
 }

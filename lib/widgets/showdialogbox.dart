@@ -14,7 +14,7 @@ Future<dynamic> showHintSelectionDialog(BuildContext context, String hint) {
               backgroundColor: Colors.transparent,
               title: Container(
                 padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(color: Colors.amber[200], borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
                 // height: 150,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -72,50 +72,50 @@ Future<dynamic> showHintSelectionDialog(BuildContext context, String hint) {
       });
 }
 
-Future<dynamic> showCoinDialog(BuildContext context) {
-  return showDialog(
-      context: context,
-      builder: (context) {
-        return Stack(
-          children: [
-            AlertDialog(
-              backgroundColor: Colors.transparent,
-              title: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(color: Colors.amber[200], borderRadius: BorderRadius.circular(12)),
-                // height: 150,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Get more coins',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                    ),
-                    const Divider(),
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                        "This is where you can increase your coins",
-                        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: ElevatedButton(
-                          onPressed: () async {
-                            Navigator.pop(context);
-                          },
-                          child: const Text("Okay")),
-                    )
-                  ],
-                ),
-              ),
-              elevation: 10,
-            ),
-          ],
-        );
-      });
-}
+// Future<dynamic> showCoinDialog(BuildContext context) {
+//   return showDialog(
+//       context: context,
+//       builder: (context) {
+//         return Stack(
+//           children: [
+//             AlertDialog(
+//               backgroundColor: Colors.transparent,
+//               title: Container(
+//                 padding: const EdgeInsets.all(4),
+//                 decoration: BoxDecoration(color: Colors.amber[200], borderRadius: BorderRadius.circular(12)),
+//                 // height: 150,
+//                 child: Column(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     const Text(
+//                       'Get more coins',
+//                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+//                     ),
+//                     const Divider(),
+//                     const Padding(
+//                       padding: EdgeInsets.all(8.0),
+//                       child: Text(
+//                         "This is where you can increase your coins",
+//                         style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+//                       ),
+//                     ),
+//                     Align(
+//                       alignment: Alignment.bottomRight,
+//                       child: ElevatedButton(
+//                           onPressed: () async {
+//                             Navigator.pop(context);
+//                           },
+//                           child: const Text("Okay")),
+//                     )
+//                   ],
+//                 ),
+//               ),
+//               elevation: 10,
+//             ),
+//           ],
+//         );
+//       });
+// }
 
 Future<dynamic> showHintDialog(BuildContext context, String hint) {
   return showDialog(
@@ -127,7 +127,7 @@ Future<dynamic> showHintDialog(BuildContext context, String hint) {
               backgroundColor: Colors.transparent,
               title: Container(
                 padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(color: Colors.amber[200], borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
                 // height: 150,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -172,7 +172,7 @@ Future<dynamic> notEnoughCoins(BuildContext context) {
               backgroundColor: Colors.transparent,
               title: Container(
                 padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(color: Colors.amber[200], borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
                 // height: 150,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -217,7 +217,7 @@ Future<dynamic> showEntryCoinDialog(BuildContext context) {
             backgroundColor: Colors.transparent,
             title: Container(
               padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(color: Colors.amber[200], borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
               // height: 150,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -328,5 +328,103 @@ Widget wonDialogBox(BuildContext context) {
         ),
       ),
     ),
+  );
+}
+
+Future<dynamic> showCoinDialog(BuildContext context, VoidCallback function) {
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return Stack(
+        children: [
+          AlertDialog(
+            backgroundColor: Colors.transparent,
+            title: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
+              // height: 150,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Get more coins',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  const Divider(),
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Watch ads to earn coins",
+                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        // log("Onpressed");
+                        Navigator.pop(context);
+                        function();
+                      },
+                      child: const Text("Watch ads"),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            elevation: 10,
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<dynamic> adError(
+  BuildContext context,
+) {
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return Stack(
+        children: [
+          AlertDialog(
+            backgroundColor: Colors.transparent,
+            title: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
+              // height: 150,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Ads Error',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  const Divider(),
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "No ads available at the moment",
+                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Okay"),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            elevation: 10,
+          ),
+        ],
+      );
+    },
   );
 }
