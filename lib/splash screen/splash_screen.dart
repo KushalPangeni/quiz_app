@@ -71,16 +71,18 @@ class _SplashScreenState extends State<SplashScreen> {
     //Load AppOpen Ad
     appOpenAdManager.loadAd();
     //Show AppOpen Ad After 8 Seconds
-    Future.delayed(const Duration(seconds: 10)).then((value) {
-      //Here we will wait for 8 seconds to load our ad
-      //After 8 second it will go to HomePage
-      appOpenAdManager.showAdIfAvailable();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const HomePage(),
-        ),
-      );
-    });
+    Future.delayed(const Duration(seconds: 10)).then(
+      (value) {
+        //Here we will wait for 8 seconds to load our ad
+        //After 8 second it will go to HomePage
+        appOpenAdManager.showAdIfAvailable();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const HomePage(),
+          ),
+        );
+      },
+    );
   }
 }
