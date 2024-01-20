@@ -182,27 +182,28 @@ class _TestPageState extends State<TestPage> {
                   // Text(MediaQuery.sizeOf(context).width.toString()),
                   //Images
                   SizedBox(
-                      height: MediaQuery.sizeOf(context).height / 2.4,
-                      child: anyImageIsBigger
-                          ? biggerImageContainer()
-                          : Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    photo1(widget.pic1),
-                                    photo1(widget.pic2),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    photo1(widget.pic3),
-                                    photo1(widget.pic4),
-                                  ],
-                                )
-                              ],
-                            )),
+                    height: MediaQuery.sizeOf(context).height / 2.4,
+                    child: anyImageIsBigger
+                        ? biggerImageContainer()
+                        : Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  photo1(widget.pic1),
+                                  photo1(widget.pic2),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  photo1(widget.pic3),
+                                  photo1(widget.pic4),
+                                ],
+                              )
+                            ],
+                          ),
+                  ),
                   Text(
                     widget.title,
                     style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
